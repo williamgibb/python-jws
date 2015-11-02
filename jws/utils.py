@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from __future__ import print_function
 
 import base64
 import json
@@ -31,20 +32,37 @@ def encode(a): return to_base64(to_json(a))
 def decode(a): return from_json(from_base64(a))
 
 #Taken from Django Source Code
+if binary_type == str:
+    def constant_time_compare(val1, val2):
+        """
+        Returns True if the two strings are equal, False otherwise.
 
-def constant_time_compare(val1, val2):
-    """
-    Returns True if the two strings are equal, False otherwise.
+        The time taken is independent of the number of characters that match.
 
-    The time taken is independent of the number of characters that match.
+        For the sake of simplicity, this function executes in constant time only
+        when the two strings have the same length. It short-circuits when they
+        have different lengths.
+        """
+        if len(val1) != len(val2):
+            return False
+        result = 0
+        for x, y in zip(val1, val2):
+            result |= ord(x) ^ ord(y)
+        return result == 0
+else:
+    def constant_time_compare(val1, val2):
+        """
+        Returns True if the two strings are equal, False otherwise.
 
-    For the sake of simplicity, this function executes in constant time only
-    when the two strings have the same length. It short-circuits when they
-    have different lengths.
-    """
-    if len(val1) != len(val2):
-        return False
-    result = 0
-    for x, y in zip(val1, val2):
-        result |= ord(x) ^ ord(y)
-    return result == 0
+        The time taken is independent of the number of characters that match.
+
+        For the sake of simplicity, this function executes in constant time only
+        when the two strings have the same length. It short-circuits when they
+        have different lengths.
+        """
+        if len(val1) != len(val2):
+            return False
+        result = 0
+        for x, y in zip(val1, val2):
+            result |= x ^ y
+        return result == 0
